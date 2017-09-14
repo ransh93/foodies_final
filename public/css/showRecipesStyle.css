@@ -27,7 +27,7 @@ h2 {
 /* @end */
 /* @group Main */
 body section {
-  width: 576px;
+  width: 100%;
   margin: 15px auto;
   padding-bottom: 18px;
   background-color: #f4f4f4;
@@ -44,7 +44,7 @@ body section {
   /* @end */
 }
 body section #poster {
-  width: 576px;
+  width: 100%;
   height: 258px;
   position: relative;
   border-bottom: 5px solid #e53b39;

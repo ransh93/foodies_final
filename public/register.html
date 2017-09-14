@@ -4,29 +4,31 @@
 <head>
     <script>
         document.onreadystatechange = function() {
+            if (document.readyState === "complete") {
 
-        function registerAjax() {
-            var username = document.getElementById("username");
-            var password = document.getElementById("password");
+                function registerAjax() {
+                    var username = document.getElementById("username");
+                    var password = document.getElementById("password");
 
-            var xhttp = new XMLHttpRequest();
-            xhttp.onreadystatechange = function () {
-                if (this.readyState == 4 && this.status == 200) {
-                    window.location.replace("/public/login.html");
+                    var xhttp = new XMLHttpRequest();
+                    xhttp.onreadystatechange = function () {
+                        if (this.readyState == 4 && this.status == 200) {
+                            window.location.replace("/public/login.html");
+                        }
+                        else if (this.readyState == 4 && this.status == 500) {
+                            var incorrect = document.getElementById("incorrect");
+                            incorrect.style.display = "block";
+                        }
+                    };
+
+                    xhttp.open("GET", "/register/" + username.value + "/" + password.value, true);
+                    xhttp.send();
                 }
-                else if (this.readyState == 4 && this.status == 500) {
-                    var incorrect = document.getElementById("incorrect");
-                    incorrect.style.display = "block";
-                }
-            };
 
-            xhttp.open("GET", "/register/" + username.value + "/" + password.value, true);
-            xhttp.send();
+                var register = document.getElementById("register-btn");
+                register.addEventListener('click', registerAjax);
+            }
         }
-
-        var register = document.getElementById("register-btn");
-        register.addEventListener('click',registerAjax);
-    }
     </script>
     <meta charset="utf-8">
     <title>Cooking - Sign In</title>
