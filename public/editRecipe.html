@@ -300,11 +300,10 @@
                   }
               };
 
-              xhttp.open("GET", "/users/", true);
+              xhttp.open("GET", "/users/", false);
               xhttp.send();
           }
 
-          getAllUsers();
           $(document).ready(function() {
               getAllUsers();
               $(".js-example-basic-multiple").select2({
