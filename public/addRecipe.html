@@ -1,0 +1,171 @@
+<head>
+<link rel="stylesheet" href="http://code.jquery.com/mobile/1.0.1/jquery.mobile-1.0.1.min.css" />
+<script src="http://code.jquery.com/jquery-1.6.4.min.js"></script>
+<script src="http://code.jquery.com/mobile/1.0.1/jquery.mobile-1.0.1.min.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
+
+<script>
+
+document.onreadystatechange = function(){
+    if(document.readyState === 'complete'){
+
+        var saveRecipe = document.getElementById("saveRecipe");
+        saveRecipe.addEventListener('click',saveRecipeAction);
+
+    }
+}
+
+function saveRecipeAction()
+{
+    var recipeName = document.getElementById("recipeName");
+    var recipeSummery = document.getElementById("recipeSummery");
+    var recipeInstructions = document.getElementById("recipeInstructions");
+
+    recipe.name_of_recipe = recipeName.value;
+    recipe.summery = recipeSummery.value;
+    recipe.recipe_instructions = recipeInstructions.value;
+
+
+    var jsonRecipe = JSON.stringify(recipe);
+    alert(jsonRecipe);
+    postAddItemAjax(jsonRecipe);
+}
+
+function postAddItemAjax(recipe) {
+
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+            alert("The recipe was added successfully");
+        }
+        else if (this.readyState == 4 && this.status == 301) {
+            window.location.replace("/public/index.html");
+        }
+        else if (this.readyState == 4 && this.status == 500) {
+            alert("The item id already exist, try a diffrent one...");
+        }
+    };
+
+
+    //var serial = document.getElementById("serial");
+    //var details = document.getElementById("details");
+    //var count = document.getElementById("count");
+
+    xhttp.open("POST", "/recipe/", true);
+    xhttp.send(recipe);
+}
+
+function Recipe(id, name_of_recipe, summery, user_id, access_type, access_list, picture, recipe_instructions)
+{
+	this.id = id;
+	this.name_of_recipe = name_of_recipe;
+    this.summery = summery;
+    this.user_id = user_id;
+    //this.name_of_owner = valid_cookies[user_id];
+    this.picture = picture;
+    this.recipe_instructions = recipe_instructions;
+    this.access_type = access_type; // Can be private/public
+    this.access_list = access_list; // a list of permited users(uniqe email).
+    this.products = [];
+
+	this.addProduct = function(product) {
+        this.products.push(product);
+    };
+
+	this.removeProduct = function(product) {
+	    var index = this.products.indexOf(product);
+        this.products.splice(index, 1);
+    };
+}
+
+
+var recipe = new Recipe();
+
+//var json = JSON.stringify(recipe);
+
+
+$('.deleteMe').live('click', function(){
+    $(this).parent().remove();
+    var val = $(this).parent().text();
+    recipe.removeProduct(val);
+    $('#recipeItemList').listview('refresh');
+});
+
+$("#addItem").live('click', function() {
+
+    var newItem = $('#recipeItem').val();
+
+    if(newItem != '') {
+        $('#recipeItemList').append('<li><a>' + newItem + '</a><a class="deleteMe"></a></li>').listview('refresh');
+        recipe.addProduct(newItem);
+        $('#recipeItem').val('');
+    } else {
+        alert('Nothing to add');   
+    }
+});
+
+</script>
+</head>
+
+<body>
+
+<div data-role="page" id="home">
+    <h1> Add a recipe page </h1>
+    <input type="text" placeholder="What is the recipe name" id="recipeName" />
+    </br>
+
+    <h1> Add a recipe summery </h1>
+    <textarea id="recipeSummery" rows="4" cols="50">
+    </textarea>
+    </br>
+
+    <div data-role="content">
+
+        <ul data-role="listview" id="recipeItemList" data-split-icon="delete" data-split-theme="d">
+           <li id="l1"><a>Add new product to the recipe</a><a id="1" class="deleteMe"></a></li>
+        </ul>
+        <br />
+		<br />
+        <fieldset class="ui-grid-a">
+           <div class="ui-block-a">
+              <input type="text" placeholder="Add new product to the recipe" id="recipeItem" />
+           </div>
+           <div class="ui-block-b">
+             <input type="button" value="Add" id="addItem"/>
+           </div>
+        </fieldset>
+
+        <h1> Add a recipe instructions </h1>
+        <textarea id="recipeInstructions" rows="4" cols="50">
+        </textarea>
+        </br>
+
+
+
+        <input type="button" value="Save you recipe" id="saveRecipe"/>
+
+
+    
+    </div>
+
+
+    <script>
+        $(document).ready(function() {
+            $(".js-example-basic-multiple").select2();
+        });
+    </script>
+
+
+
+    <select class="js-example-basic-multiple" multiple="multiple">
+        <option value="AL">Alabama</option>
+        ...
+        <option value="WY">Wyoming</option>
+    </select>
+
+</div>
+
+
+
+<body>

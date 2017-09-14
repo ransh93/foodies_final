@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html >
+<head>
+	<meta charset="UTF-8">
+	<title>Debug page</title>
+	<link href='https://fonts.googleapis.com/css?family=Titillium+Web:400,300,600' rel='stylesheet' type='text/css'>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+	<script src='http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
+	<script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+	
+	<script>
+	document.onreadystatechange = function() {
+
+        function registerAjax() {
+            var username = document.getElementById("username");
+            var password = document.getElementById("password");
+
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    var logTab = document.getElementById("loginTab");
+                    var signTab = document.getElementById("signupTab");
+
+                    var loginDiv = document.getElementById("loginDiv");
+                    var signupDiv = document.getElementById("signupDiv");
+
+
+                    signTab.classList.remove('active');
+                    logTab.classList.add('active');
+
+                    signupDiv.style.display = "none";
+                    loginDiv.style.display = "block";
+
+                    var userMsgSign = document.getElementById("userMsgSign");
+                    userMsgSign.style.display = "none";
+
+                }
+                else if (this.readyState == 4 && this.status == 500) {
+                    var userMsgSign = document.getElementById("userMsgSign");
+                    userMsgSign.style.display = "block";
+                }
+            };
+
+            xhttp.open("GET", "/register/" + username.value + "/" + password.value, true);
+            xhttp.send();
+        }
+
+        function loginAjax() {
+            var username = document.getElementById("logUser");
+            var password = document.getElementById("logPassword");
+
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    var form = document.getElementById("form");
+                    form.style.display = "none";
+
+                    var main = document.getElementById("main");
+                    main.style.display = "block";
+
+                    showAllOn();
+                }
+                else if (this.readyState == 4 && this.status == 500) {
+                    var userMsgLog = document.getElementById("userMsgLog");
+                    userMsgLog.style.display = "block";
+                }
+            };
+
+            xhttp.open("GET", "/login/" + username.value + "/" + password.value, true);
+            xhttp.send();
+        }
+
+        function getItemsAjax() {
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    var items_list = [];
+                    items_list = JSON.parse(this.responseText);
+                    var itemsTable = document.getElementById("itemsTable");
+                    itemsTable.innerHTML = "";
+                    var showAllEmpty = document.getElementById("showAllEmpty");
+
+
+                    if (items_list.length == 0) {
+                        showAllEmpty.innerHTML = "<h1> There are no items in the inventory</h1>";
+                    }
+                    else {
+                        showAllEmpty.innerHTML = "";
+                        var row = itemsTable.insertRow(0);
+                        var cell = row.insertCell(0);
+                        cell.innerHTML = "Serial number";
+                        var cell = row.insertCell(1);
+                        cell.innerHTML = "Quantity";
+                        var cell = row.insertCell(2);
+                        cell.innerHTML = "Item description";
+
+                        var rowIndex = 1;
+
+                        for (var i in items_list) {
+                            var currentItem = JSON.parse(items_list[i]);
+                            var row = itemsTable.insertRow(rowIndex);
+                            var cellIndex = 0;
+
+                            for (var key in currentItem) {
+                                if (currentItem.hasOwnProperty(key)) {
+                                    if (key == 'data') {
+                                        var res = currentItem[key].split(",");
+                                        var cell = row.insertCell(cellIndex);
+                                        cell.innerHTML = res[0];
+                                        cell = row.insertCell(cellIndex++);
+                                        cell.innerHTML = res[1];
+                                    }
+                                    else {
+                                        var cell = row.insertCell(cellIndex);
+                                        cell.innerHTML = currentItem[key];
+                                        cellIndex++;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                }
+                else if (this.readyState == 4 && this.status == 301) {
+                    window.location.replace("/public/index.html");
+                }
+            };
+
+
+            xhttp.open("GET", "/items/", true);
+            xhttp.send();
+        }
+
+        function postAddItemAjax() {
+
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    alert("The item was added successfully");
+                }
+                else if (this.readyState == 4 && this.status == 301) {
+                    window.location.replace("/public/index.html");
+                }
+                else if (this.readyState == 4 && this.status == 500) {
+                    alert("The item id already exist, try a diffrent one...");
+                }
+            };
+
+
+            //var serial = document.getElementById("serial");
+            //var details = document.getElementById("details");
+            //var count = document.getElementById("count");
+
+            var json = JSON.stringify({id: 1, name_of_recipe: 'Hamburger', access_type: 'private'});
+            xhttp.open("POST", "/recipe/", true);
+            xhttp.send(json);
+        }
+
+        function deleteItemAjax() {
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    alert("The item was deleted successfully");
+                }
+                else if (this.readyState == 4 && this.status == 404) {
+                    alert("The item was id was not found in our systems");
+                }
+                else if (this.readyState == 4 && this.status == 301) {
+                    window.location.replace("/public/index.html");
+                }
+            };
+
+            //var serialToDelete = document.getElementById("serialToDelete");
+
+            xhttp.open("DELETE", "/recipe/" + 0, true);
+            xhttp.send();
+        }
+
+        function getItemAjax() {
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                //var itemsTable = document.getElementById("itemTable");
+                //itemTable.innerHTML = "";
+
+                if (this.readyState == 4 && this.status == 200) {
+
+                    var respObj = JSON.parse(this.responseText);
+                    alert(respObj.name_of_recipe);
+
+                    /*
+                    var row = itemsTable.insertRow(0);
+                    var cell = row.insertCell(0);
+                    cell.innerHTML = "Serial number";
+                    var cell = row.insertCell(1);
+                    cell.innerHTML = "Quantity";
+                    var cell = row.insertCell(2);
+                    cell.innerHTML = "Item description";
+
+                    var respObj = JSON.parse(this.responseText);
+                    var row = itemsTable.insertRow(1);
+                    var cellIndex = 0;
+
+                    for (var key in respObj) {
+                        if (respObj.hasOwnProperty(key)) {
+                            if (key == 'data') {
+                                var res = respObj[key].split(",");
+                                var cell = row.insertCell(cellIndex);
+                                cell.innerHTML = res[0];
+                                cell = row.insertCell(cellIndex++);
+                                cell.innerHTML = res[1];
+                            }
+                            else {
+                                var cell = row.insertCell(cellIndex);
+                                cell.innerHTML = respObj[key];
+                                cellIndex++;
+                            }
+                        }
+                    }
+				*/
+                }
+                else if (this.readyState == 4 && this.status == 404) {
+                    alert("The item was id was not found in our systems");
+                }
+                else if (this.readyState == 4 && this.status == 301) {
+                    window.location.replace("/public/index.html");
+                }
+            };
+
+
+            //var serialToShow = document.getElementById("serialToShow");
+
+            xhttp.open("GET", "/recipe/1", true);
+            xhttp.send();
+        }
+
+        function putItemAjax() {
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    alert("The item was updated successfully");
+
+                }
+                else if (this.readyState == 4 && this.status == 404) {
+                    alert("The item was id was not found in our systems");
+                }
+                else if (this.readyState == 4 && this.status == 301) {
+                    window.location.replace("/public/index.html");
+                }
+            };
+
+            //var serialToUpdate = document.getElementById("serialToUpdate");
+            //var detailsToUpdate = document.getElementById("detailsToUpdate");
+            //var countToUpdate = document.getElementById("countToUpdate");
+
+            var json = JSON.stringify({
+                id: 1,
+                name_of_recipe: 'KOKO'
+            });
+            xhttp.open("PUT", "/recipe/", true);
+            xhttp.send(json);
+        }
+
+        //postAddItemAjax();
+        getItemAjax();
+        //deleteItemAjax();
+        //putItemAjax();
+    }
+
+
+
+
+	</script>
+</head>
+
+<body>
+
+
+<h1>This is a debug code<h1>
+
+
+<!-- Bootstrap core JavaScript
+    ================================================== -->
+	<!-- Placed at the end of the document so the pages load faster -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+	<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,18 @@
+{
+  "name": "Foodies_server",
+  "version": "1.0.0",
+  "private": true,
+    "engines": {
+    "node": "6.10.0"
+  },
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "body-parser": "~1.17.1",
+    "cookie-parser": "~1.4.3",
+    "express": "~4.15.2",
+	"uuid": "~3.1.0",
+	"path": "~0.12.7"
+  }
+}

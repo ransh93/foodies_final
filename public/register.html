@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script>
+        document.onreadystatechange = function() {
+
+        function registerAjax() {
+            var username = document.getElementById("username");
+            var password = document.getElementById("password");
+
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    window.location.replace("/public/login.html");
+                }
+                else if (this.readyState == 4 && this.status == 500) {
+                    var incorrect = document.getElementById("incorrect");
+                    incorrect.style.display = "block";
+                }
+            };
+
+            xhttp.open("GET", "/register/" + username.value + "/" + password.value, true);
+            xhttp.send();
+        }
+
+        var register = document.getElementById("register-btn");
+        register.addEventListener('click',registerAjax);
+    }
+    </script>
+    <meta charset="utf-8">
+    <title>Cooking - Sign In</title>
+
+    <!-- Google Fonts -->
+    <link href='https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700|Lato:400,100,300,700,900' rel='stylesheet' type='text/css'>
+
+    <link rel="stylesheet" href="../static/css/animate.css">
+    <!-- Custom Stylesheet -->
+    <link rel="stylesheet" href="../static/css/styleIntro.css">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+</head>
+
+<body>
+<div class="container">
+    <div class="top">
+        <h1 id="title" class="hidden"><span id="logo">Register <span></span></span></h1>
+    </div>
+    <div class="login-box animated fadeInUp">
+        <div class="box-header">
+            <h2>Your Details</h2>
+        </div>
+
+        <label for="username">Username </label>
+        <input type="text" id="username">
+        <br/>
+        <label for="password">Password </label>
+        <input type="password" id="password">
+        <br/>
+        <button type="submit" id="register-btn" value="send" class="btn btn-success">Sign Up</button>
+        <br/>
+        <div id="incorrect" style="color:red; display:none">
+            <p><small>This UserName is taken...</small></p>
+        </div>
+
+    </div>
+</div>
+</body>
+</html>

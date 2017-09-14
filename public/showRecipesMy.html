@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html >
+<head>
+  <meta charset="UTF-8">
+  <title>Show recipes</title>
+
+  <link rel="stylesheet" href="css/menu.css">
+
+  <script src='http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
+  <script src="js/menu.js"></script>
+  <link rel="stylesheet" href="css/showRecipesStyle.css">
+
+
+  <script>
+      document.onreadystatechange = function () {
+          if (document.readyState === "complete") {
+              var noRecipes = document.getElementById("noRecpies");
+              getAllSharedRecipes(noRecipes);
+          }
+      }
+
+      function creatRecipeContent(id, name_of_recipe, owner, likes, summary, picture)
+      {
+
+          var content = "  <section>\n" +
+              "  <div id=\"poster\">\n" +
+              "    <!-- Poster image -->\n" +
+              "    <img src=\"https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/Hamburger_%28black_bg%29.jpg/1200px-Hamburger_%28black_bg%29.jpg\" style=\"width: 576px;height: 258px;\" alt=\"© Kamil Czujowski // @kamilczujowski \" />\n" +
+              "    \n" +
+              "    <!-- Love button -->\n" +
+              "    <a href=\"#!\" likeid=\"" + id + "\" id=\"love" + "\" onclick=\"addOrRemoveLike(" + id + ")\"" + "></a>\n" +
+              "  </div>\n" +
+              "  <!-- delete recipe -->\n" +
+              "  <div id=\"add\">\n" +
+              "    <p id=\"" + id + "\">\n" + likes +
+              "      \n" +
+              "      <span>\n" +
+              "        Likes\n" +
+              "      </span>\n" +
+              "    </p>\n" +
+              "\n" +
+              "    <a href=\"#\" id=\"delete\" onclick=\"deleteRecipe(" + id +")\"" + "></a>\n" +
+              "\n" +
+              "  </div>\n" +
+              "\n" +
+              "    <div id=\"edit\">\n" +
+              "\n" +
+              "      <a href=\"editrecipe.html?id=" + id + "\" id=\"editRecipe\"></a>\n" +
+              "\n" +
+              "    </div>\n" +
+              "    <div id=\"explore\">\n" +
+              "\n" +
+              "      <a href=\"explore.html?id=" + id + "\" id=\"exploreRecipe\"></a>\n" +
+              "\n" +
+              "    </div>\n" +
+              "  <!-- Break line -->\n" +
+              "  <hr />\n" +
+              "  <!-- Comments -->\n" +
+              "  <div id=\"comments\">\n" +
+              "    <section>\n" +
+              "      <!-- 1-->\n" +
+              "      <article>\n" +
+              "        <h1>\n" +
+              "          The recipe:\n" + name_of_recipe +
+              "        </h1>\n" +
+              "\t\t</br>\n" +
+              "        <h1>\n" +
+              "          The chef:\n" + owner +
+              "        </h1>\n" +
+              "\t\t</br>\n" +
+              "        <h1>\n" +
+              "          Recipe summary:\n" + summary +
+              "        </h1>\n" +
+              "      </article>\n" +
+              "    </section>\n" +
+              "  </div>\n" +
+              "</section>";
+
+          console.log(content);
+
+          var recipesDiv = document.getElementById("recipes");
+          recipesDiv.innerHTML += content;
+      }
+
+      function getAllSharedRecipes(noRecipes) {
+
+
+          var xhttp = new XMLHttpRequest();
+          xhttp.onreadystatechange = function () {
+              if (this.readyState == 4 && this.status == 200) {
+                  var recipes = JSON.parse(this.responseText);
+
+                  recipes.forEach(function (recipe) {
+                      creatRecipeContent(recipe.id, recipe.name_of_recipe, recipe.name_of_owner, recipe.likes,recipe.summery, "pic");
+                  });
+
+              }
+              else if (this.readyState == 4 && this.status == 301) {
+                  window.location.replace("/public/login.html");
+              }
+              else if (this.readyState == 4 && this.status == 404) {
+                  noRecipes.style.display = "block";
+              }
+          };
+
+          xhttp.open("GET", "/recipes/my", true);
+          xhttp.send();
+      }
+
+      function deleteRecipe(id)
+      {
+          var xhttp = new XMLHttpRequest();
+          xhttp.onreadystatechange = function () {
+              if (this.readyState == 4 && this.status == 200) {
+                  alert("The recipe was deleted");
+
+                  var recipesDiv = document.getElementById("recipes");
+                  recipesDiv.innerHTML = "";
+                  getAllSharedRecipes();
+
+              }
+              else if (this.readyState == 4 && this.status == 301) {
+                  window.location.replace("/public/login.html");
+              }
+              else if (this.readyState == 4 && this.status == 500) {
+                  alert("Error deleting the recipe");
+              }
+          };
+
+          xhttp.open("DELETE", "/recipe/" + id, true);
+          xhttp.send();
+      }
+
+      function addOrRemoveLike(id)
+      {
+
+          var element = document.querySelectorAll('[likeid="' + id + '"]')[0];
+
+          if (element.classList.contains('act'))
+          {
+
+              var xhttp = new XMLHttpRequest();
+              xhttp.onreadystatechange = function () {
+                  if (this.readyState == 4 && this.status == 200) {
+
+                      var likes = this.responseText;
+                      var recipeLikes = document.getElementById(id);
+                      recipeLikes.innerHTML = likes + "<span> Likes </span>";
+                      element.classList.remove("act");
+                }
+                  else if (this.readyState == 4 && this.status == 301) {
+                      window.location.replace("/public/login.html");
+                  }
+                  else if (this.readyState == 4 && this.status == 404) {
+                      alert("Recipe not found");
+                  }
+              };
+
+              xhttp.open("GET", "/unlike/" + id, true);
+              xhttp.send();
+          }
+          else
+          {
+              var xhttp = new XMLHttpRequest();
+              xhttp.onreadystatechange = function () {
+                  if (this.readyState == 4 && this.status == 200) {
+
+                      var likes = this.responseText;
+                      var recipeLikes = document.getElementById(id);
+                      recipeLikes.innerHTML = likes + "<span> Likes </span>";
+                      element.classList.add("act");
+                  }
+                  else if (this.readyState == 4 && this.status == 301) {
+                      window.location.replace("/public/login.html");
+                  }
+                  else if (this.readyState == 4 && this.status == 404) {
+                      alert("Recipe not found");
+                  }
+              };
+
+              xhttp.open("GET", "/like/" + id, true);
+              xhttp.send();
+          }
+      }
+
+  </script>
+</head>
+
+<body>
+
+<div id='cssmenu'>
+  <ul>
+    <li><a href='showRecipesMy.html'>My recipes</a></li>
+    <li><a href='showRecipes.html'>Shared recipes</a></li>
+    <li><a href='addrecipenew.html'>Add a recipe</a></li>
+    <li><a href='/logout'>Logout</a></li>
+  </ul>
+</div>
+
+<div id="recipes">
+  <h1 style="color: red;display: none;" id="noRecpies" align="center">You have no recipes!</h1>
+
+</div>
+
+</body>
+</html>
