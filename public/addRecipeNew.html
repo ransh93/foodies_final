@@ -253,11 +253,10 @@
               };
 
 
-              xhttp.open("GET", "/users/", true);
+              xhttp.open("GET", "/users/", false);
               xhttp.send();
           }
 
-          getAllUsers();
           $(document).ready(function() {
               getAllUsers();
 			  alert(data);
