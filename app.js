@@ -427,6 +427,8 @@ app.get('/logout', function(req, res){
 });
 
 
-app.listen(8080, function() {
+app.set('port', (process.env.PORT || 5000));
+
+app.listen(app.get('port'), function() {
   console.log('Foodies app listening on port 8080!');
 });
