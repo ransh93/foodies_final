@@ -140,6 +140,8 @@ app.get('/users', function(req, res) {
         return res.sendStatus(301);
     }
 
+	var user_id = req.cookies.UID;
+    var user_name = valid_cookies[user_id];
 
     var usersDict = [];
     var users = Object.keys(user_list);
@@ -147,7 +149,8 @@ app.get('/users', function(req, res) {
     for (i = 0; i < users.length; i++) {
         user = users[i];
 
-        usersDict.push({id: i, text: user});
+		if(user != user_name)
+			usersDict.push({id: i, text: user});
     }
 
     res.send(usersDict);
