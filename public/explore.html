@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="css/styleEditRecipe.css">
     <link rel="stylesheet" href="css/menu.css">
     <script src="js/menu.js"></script>
+    <script src="js/addRecipe.js" defer></script>
 
 
     <style>
@@ -79,37 +80,21 @@
     </style>
 
     <script>
+        /*
+         document.onreadystatechange = function(){
+         if(document.readyState === 'complete'){
 
-        document.onreadystatechange = function(){
-            if(document.readyState === 'complete'){
 
-            }
-        }
-
-        function checkShare()
-        {
-
-            var selectShare = document.getElementById("selectShare");
-            var isShared = document.getElementById("isShared").checked;
-
-            if(isShared == false)
-            {
-                selectShare.style.display = "none";
-                recipe.access_type = "public";
-            }
-            else
-            {
-                selectShare.style.display = "block";
-                recipe.access_type = "private";
-            }
-        }
+         var isShared = document.getElementById("isShared");
+         isShared.addEventListener('click',checkShare);
+         }
+         }*/
 
         function getRecipeAjax(id) {
 
             var xhttp = new XMLHttpRequest();
             xhttp.onreadystatechange = function () {
                 if (this.readyState == 4 && this.status == 200) {
-                    alert(this.responseText);
                     var recipeNew = JSON.parse(this.responseText);
 
                     var recipeName = document.getElementById("recipeName");
@@ -128,7 +113,8 @@
                     });
 
                     var recipeIndi=document.getElementById("new-task");
-                    recipeIndi.textContent=recipeNew.products.join("\n");
+                    recipeIndi.innerHTML=recipeNew.products.map(function (product) {
+                        return '<div>' + product + '</div>'}).join('');
 
                     if(recipeNew.access_type != "public")
                     {
@@ -163,6 +149,7 @@
             this.name_of_recipe = name_of_recipe;
             this.summery = summery;
             this.user_id = user_id;
+            //this.name_of_owner = valid_cookies[user_id];
             this.picture = picture;
             this.recipe_instructions = recipe_instructions;
             this.access_type = access_type; // Can be private/public
@@ -216,25 +203,20 @@
     </p>-->
 
     <h3>Recipe ingredients</h3>
-    <div id="new-task" style="color:white;"></div>
-	<h1 id="new-task1" style="color:white;">
-	1 <br>
-	2
-	3
-	</h1>
+    <div id="new-task" style="color:white"></div>
 
     <!--<ul id="incomplete-tasks">-->
 
-    </ul>
+    <!--</ul>-->
 
-    <br><br><br>
+    <br>
     <h4>Recipe instructions:</h4>
     <!--<textarea id="recipeInstructions"></textarea>-->
-    <span id="recipeInstructions" style="color:white"></span>
+    <span id="recipeInstructions" style="color:white; white-space: pre-line"></span>
     <br><br>
 
 
-<input type="button" style="color:white;background-color:#008CBA;font-size:14px;" onclick="location.href='/showRecipesMy.html';" value="Back To Recipes" />
+    <input type="button" style="color:white;background-color:#008CBA;font-size:14px;" onclick="location.href='/showRecipesMy.html';" value="Back To Recipes" />
 
 
 </div>
